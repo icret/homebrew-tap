@@ -1,0 +1,40 @@
+name: Update Cask
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check and update sha256
+        run: |
+          set -euo pipefail
+          URL="https://icret.github.io/AuraCalc-Free/AuraCalc-latest.dmg"
+          NEW_SHA=$(curl -fsSL "$URL" | sha256sum | awk '{print $1}')
+          CURRENT_SHA=$(grep -o 'sha256 "[^"]*"' Casks/auracalc.rb | awk -F'"' '{print $2}')
+
+          echo "current: $CURRENT_SHA"
+          echo "remote:  $NEW_SHA"
+
+          if [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
+            echo "No update needed."
+            exit 0
+          fi
+
+          TODAY=$(date +%Y.%m.%d)
+          sed -i "s/version \".*\"/version \"$TODAY\"/" Casks/auracalc.rb
+          sed -i "s/sha256 \".*\"/sha256 \"$NEW_SHA\"/" Casks/auracalc.rb
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/auracalc.rb
+          git commit -m "auracalc: bump to $TODAY"
+          git push
