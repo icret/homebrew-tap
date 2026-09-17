@@ -1,6 +1,6 @@
 cask "auracalc" do
   version "1.0.0"
-  sha256 "ef5109c0fb6c5e0f8b81246594511c81ddd83fd59f537e8a2a8d6331a45c8f6d"
+  sha256 "c620cb44602c44cd3c2f8fff17e5a7f99d74f7f07232f24fde90e850bbfe2f2f"
 
   url "https://icret.github.io/AuraCalc-Free/AuraCalc-latest.dmg"
   name "AuraCalc"
